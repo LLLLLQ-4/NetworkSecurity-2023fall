@@ -1,7 +1,31 @@
 import numpy as np
+
+def xor(bin_1_str, bin_2_str, bits):
+    bin_xor = ""
+    for i in range(bits):
+        bin_xor = bin_xor + bin(int(bin_1_str[i])^int(bin_2_str[i]))[2:]
+
+    return f"0b{bin_xor}"
+
+def to_bin_modulo(num, modulo):
+    bit_cnt = 0
+    while(modulo > 0):
+        bit_cnt += 1
+        modulo //= 2
+    
+    bit_flow = bin(num)
+    prefix = ""
+    if len(bit_flow[2:]) < bit_cnt:
+        for i in range(bit_cnt - len(bit_flow) + 2):
+            prefix += "0"
+    bit_flow = prefix + bit_flow[2:]
+    return bit_cnt, bit_flow
+
+
+
 # generate IV
 def generate_IV(size, modulo):
-    return np.random.randint(0, modulo, [1, size])
+    return np.random.randint(0, modulo, [1, size])[0].tolist()
 
 # implement extended euclidean algorithm to calculate the greatest common divisor of a and b
 def extended_euclidean_algorithm(a, b):
