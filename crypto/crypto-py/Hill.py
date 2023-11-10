@@ -1,5 +1,5 @@
 import numpy as np
-
+import utils
 class Hill:
     def __init__(self, plaintext, blocksize):
         self.block_size = blocksize
@@ -10,9 +10,9 @@ class Hill:
         self.plaintext = plaintext+ ''.join(plaintext[-1:] for i in range(self.padding_bit))
         self.plain_block = [self.plaintext[i * self.block_size :(i+1) * self.block_size] for i in range(self.block_cnt)]
 
-        self.key_matrix = [[5, 8], [17, 3]]
-        self.key_matrix_iv = [[9,2], [1, 15]]
-        self.key_matrix_generated = True        
+        self.key_matrix = []
+        self.key_matrix_iv = []
+        self.key_matrix_generated = False        
         
         self.cipher_block = ['' for i in range(self.block_cnt)]
         self.ciphertext = ''
@@ -21,16 +21,17 @@ class Hill:
 
     def generate_key_matrix(self):
         key_matrix = np.random.randint(0, 26, [self.block_size, self.block_size])
-
-        while np.linalg.det(key_matrix) == 0:
+        det = round(np.linalg.det(key_matrix)) % 26
+        det_inverse = utils.modulo_inverse(det, 26)
+        while det == 0 or det_inverse == "non inverse":
             key_matrix = np.random.randint(0, 26, [self.block_size, self.block_size])
-            print(key_matrix) 
-            print(np.linalg.det(key_matrix))
-        
+            det = round(np.linalg.det(key_matrix)) % 26
+            det_inverse = utils.modulo_inverse(det, 26)
         self.key_matrix = key_matrix
+        print("key_matrix:\n",self.key_matrix)
         # TODO: inverse of the key matrix
-        self.key_matrix_iv = np.linalg.pinv()
-        print(self.key_matrix_iv)
+        self.key_matrix_iv = utils.modulo_matrix_inverse(self.key_matrix, 26)
+        print("key_matrix_iv:\n", self.key_matrix_iv)
         self.key_matrix_generated = True
 
     def text2ascii_block(self, text_block):
@@ -70,7 +71,6 @@ class Hill:
 
         for i in range(len(plain_block)):
             plain_block[i] = plain_block[i] % 26
-
         plaintext_block = self.ascii2text_block(plain_block)
 
         return plaintext_block
