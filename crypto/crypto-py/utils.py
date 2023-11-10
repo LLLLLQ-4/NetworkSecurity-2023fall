@@ -1,7 +1,9 @@
 import numpy as np
-def generate_IV():
-    pass
+# generate IV
+def generate_IV(size, modulo):
+    return np.random.randint(0, modulo, [1, size])
 
+# implement extended euclidean algorithm to calculate the greatest common divisor of a and b
 def extended_euclidean_algorithm(a, b):
     if a == 0:
         return b, 0, 1
@@ -9,6 +11,7 @@ def extended_euclidean_algorithm(a, b):
         gcd, x, y = extended_euclidean_algorithm(b % a, a)
         return gcd, y - (b // a) * x, x
 
+# calculate the inverse of a number modulus some modulo
 def modulo_inverse(num, modulo):
     num = num % modulo
     gcd, x, _ = extended_euclidean_algorithm(num, modulo)
@@ -18,6 +21,7 @@ def modulo_inverse(num, modulo):
     else:
         return "non inverse"
 
+# calculate the inverse matrix of a certain matrix given a modulo
 def modulo_matrix_inverse(matrix, modulo):
     det = round(np.linalg.det(matrix)) % modulo
     det_inverse = modulo_inverse(det, modulo)
